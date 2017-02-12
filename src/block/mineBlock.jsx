@@ -16,3 +16,5 @@ const mineBlock = (block) => {
 
   return nonce;
 }
+
+export default mineBlock;
