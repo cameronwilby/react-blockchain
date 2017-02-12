@@ -1,7 +1,6 @@
 import {Constants} from './BlockActions';
 import sha256 from 'sha256';
-
-const hashBlock = ({blockNumber, nonce, data}) => sha256(blockNumber + nonce + data);
+import hashBlock from '../hash/hashBlock';
 
 const blockReducer = (state = {
   blockNumber: '',
@@ -11,11 +10,15 @@ const blockReducer = (state = {
 }, action) => {
   switch (action.type) {
     case Constants.MODIFY_BLOCK_NUMBER:
-      return {
+      let newState = {
         ...state,
         blockNumber: action.blockNumber,
         hash: hashBlock({blockNumber: action.blockNumber, nonce: state.nonce, data: state.data})
       };
+
+      console.log('Handling action blockReducer.onBlockNumberChanged (action, state, newState)', action, state, newState);
+
+      return newState;
     case Constants.MODIFY_NONCE:
       return {
         ...state,
@@ -28,23 +31,6 @@ const blockReducer = (state = {
         data: action.data,
         hash: hashBlock({blockNumber: state.blockNumber, nonce: state.nonce, data: action.data})
       };
-    case Constants.MINE:
-      let block = {
-        ...state
-      };
-
-      var found = false;
-      for (let i in Array(500000).fill()) {
-        if (found)
-          break;
-        block.nonce = i;
-        block.hash = hashBlock(block);
-        if (block.hash.substr(0, 4) === '0000') {
-          found = true;
-        }
-      }
-
-      return block;
     default:
       return state;
   };

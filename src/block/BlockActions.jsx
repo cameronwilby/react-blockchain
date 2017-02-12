@@ -9,9 +9,6 @@ const {Actions, Constants} = EasyActions({
   },
   MODIFY_BLOCK_DATA(type, data) {
     return {type, data};
-  },
-  MINE(type) {
-    return {type};
   }
 });
 

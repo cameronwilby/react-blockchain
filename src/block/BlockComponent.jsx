@@ -30,9 +30,12 @@ class Block extends React.Component {
       this.setState({mining: false});
     }, 50);
   }
-  onBlockNumberChange = (e) => this
-    .props
-    .onBlockNumberChange(e.target.value)
+  onBlockNumberChange = (e) => {
+    console.log('BlockComponent.onBlockNumberChange (e.target.value)', e.target.value);
+    this
+      .props
+      .onBlockNumberChange(e.target.value)
+  }
   onNonceChange = (e) => this
     .props
     .onNonceChange(e.target.value)

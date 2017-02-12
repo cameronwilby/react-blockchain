@@ -1,17 +1,11 @@
 import React from 'react'
 import {Button, Card} from 'semantic-ui-react';
-import {Actions} from '../block/BlockActions';
+import {Actions} from './BlockchainActions';
 import Block from '../block/BlockComponent';
 import {connect} from 'react-redux';
 import mineBlock from '../block/mineBlock';
 
 class Blockchain extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {};
-  }
-
   addBlock = (e) => {
     this
       .props
@@ -20,14 +14,14 @@ class Blockchain extends React.Component {
   render() {
     const {blockchain} = this.props;
 
-    const blocks = [];
-
-    for (let i = 0; i < blockchain.length; i++) {
+    const blocks = blockchain.map((block, i) => {
       const mapStateToProps = (state) => {
         let newState = {
-          block: blockchain[i],
-          previous: i > 0 && blockchain[i - 1]
+          block: state.blockchain[i],
+          previous: i > 0 && state.blockchain[i - 1]
         };
+
+        console.log('BlockchainComponent.render.block-' + i + ' (state, newState)', state, newState);
 
         return newState;
       }
@@ -35,13 +29,26 @@ class Blockchain extends React.Component {
       const mapDispatchToProps = (dispatch) => {
         return {
           onBlockNumberChange(blockNumber) {
-            dispatch(Actions.MODIFY_BLOCK_NUMBER(blockNumber));
+            console.log('Dispatching action onBlockNumberChange (e.target.value -> blockNumber)', blockNumber)
+            dispatch(Actions.MODIFY_BLOCK_NUMBER_IN_CHAIN({
+              ...block,
+              blockNumber,
+              i
+            }));
           },
           onNonceChange(nonce) {
-            dispatch(Actions.MODIFY_NONCE(nonce));
+            dispatch(Actions.MODIFY_NONCE_IN_CHAIN({
+              ...block,
+              nonce,
+              i
+            }));
           },
           onDataChange(data) {
-            dispatch(Actions.MODIFY_BLOCK_DATA(data));
+            dispatch(Actions.MODIFY_BLOCK_DATA_IN_CHAIN({
+              ...block,
+              data,
+              i
+            }));
           },
           onMine(block) {
             dispatch(Actions.MODIFY_NONCE(mineBlock(block)));
@@ -50,8 +57,8 @@ class Blockchain extends React.Component {
       }
 
       const BlockComponent = connect(mapStateToProps, mapDispatchToProps)(Block);
-      blocks.push(<BlockComponent key={i}/>);
-    }
+      return (<BlockComponent key={i}/>);
+    });
 
     return (
       <div className="blockchain-component">
